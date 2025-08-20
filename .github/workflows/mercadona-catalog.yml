@@ -8,6 +8,7 @@ on:
 # Permisos necesarios para escribir en el repositorio
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   update-catalog:
@@ -20,7 +21,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0  # Necesario para poder hacer push
 
       - name: Set up Python
@@ -42,11 +42,18 @@ jobs:
       - name: Run catalog generator
         run: python mercadona.py
 
-      - name: Commit and push changes
+      - name: Configure Git properly
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          
+          # FORZAR la URL remota CORRECTA sin espacios adicionales
+          git remote set-url origin https://github.com/alexrequeni81/market_database.git
+          # Verificar la URL remota
+          echo "URL remota configurada:"
+          git remote -v
+
+      - name: Commit and push changes
+        run: |
           # Añadir solo los archivos relevantes
           git add catalogos/catalogo_completo_actual.csv
           git add catalogos/build_successful.txt
@@ -54,5 +61,6 @@ jobs:
           # Crear commit
           git commit -m "Actualización diaria del catálogo de Mercadona [$(date +'%Y-%m-%d')]" || echo "No hay cambios para commitear"
           
-          # Hacer push
-          git push origin main
+          # Hacer push usando el GITHUB_TOKEN DIRECTAMENTE en la URL
+          echo "Haciendo push a la rama main..."
+          git push "https://x-access-token:${{ github.token }}@github.com/alexrequeni81/market_database.git" main
