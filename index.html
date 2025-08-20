@@ -1,1 +1,63 @@
-
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Productos Mercadona</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Catálogo de Productos Mercadona</h1>
+            <p id="last-update">Cargando información...</p>
+        </header>
+        
+        <div class="controls">
+            <input type="text" id="search-input" placeholder="Buscar productos...">
+            <select id="category-filter">
+                <option value="">Todas las categorías</option>
+            </select>
+            <button id="refresh-btn">Actualizar datos</button>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Total Productos</h3>
+                <p id="total-products">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Categorías</h3>
+                <p id="total-categories">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Última Actualización</h3>
+                <p id="update-date">-</p>
+            </div>
+        </div>
+        
+        <div id="loading" class="loading">Cargando catálogo...</div>
+        <div id="error-message" class="error-message" style="display: none;"></div>
+        
+        <div class="table-container">
+            <table id="products-table">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th>Precio (€)</th>
+                        <th>Precio por Unidad</th>
+                        <th>Disponible</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Los datos se cargarán aquí dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script src="js/app.js"></script>
+</body>
+</html>
