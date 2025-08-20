@@ -1,0 +1,53 @@
+name: Actualización Diaria del Catálogo Mercadona
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # A medianoche UTC (una vez al día)
+  workflow_dispatch:  # Permite ejecución manual desde GitHub
+
+jobs:
+  update-catalog:
+    runs-on: ubuntu-latest
+    env:
+      WAREHOUSE_CODE: 'vlc1'  # Cambia según tu ubicación (mnd1=Madrid, bcn1=Barcelona, etc.)
+      MAX_PRODUCTS: '2000'    # Ajusta según tus necesidades
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Necesario para poder hacer push
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas requests
+
+      - name: Create required directories
+        run: |
+          mkdir -p catalogos
+          mkdir -p mercadona_cache_v6/products
+          mkdir -p mercadona_cache_v6/categories
+
+      - name: Run catalog generator
+        run: python mercadona.py
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          
+          # Añadir solo los archivos relevantes
+          git add catalogos/catalogo_completo_actual.csv
+          git add catalogos/build_successful.txt
+          
+          # Crear commit
+          git commit -m "Actualización diaria del catálogo de Mercadona [$(date +'%Y-%m-%d')]" || echo "No hay cambios para commitear"
+          
+          # Hacer push
+          git push origin main
